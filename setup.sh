@@ -120,6 +120,7 @@ aws s3 cp s3://inreach-emr-jars/inreach-ml-batch.jar /root/spark/
 
 # Start streaming job
 echo "Kicking off spark job"
-nohup /root/spark-ec2/runJob.sh
+nohup /root/spark-ec2/runJob.sh &
+sleep 20
 
 popd > /dev/null
