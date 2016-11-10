@@ -241,7 +241,7 @@ def parse_args():
     parser.add_option(
         "--hadoop-major-version", default="yarn",
         help="Major version of Hadoop. Valid options are 1 (Hadoop 1.0.4), 2 (CDH 4.2.0), yarn " +
-             "(Hadoop 2.4.0) (default: %default)")
+             "(Hadoop 2.7.0) (default: %default)")
     parser.add_option(
         "-D", metavar="[ADDRESS:]PORT", dest="proxy_port",
         help="Use SSH dynamic port forwarding to create a SOCKS proxy at " +
@@ -336,6 +336,9 @@ def parse_args():
     parser.add_option(
         "--instance-profile-name", default=None,
         help="IAM profile name to launch instances under")
+    parser.add_option(
+        "--run_job", default="echo NoJob",
+        help="command to run on cluster")
 
     (opts, args) = parser.parse_args()
     if len(args) != 2:
@@ -1116,7 +1119,8 @@ def deploy_files(conn, root_dir, opts, master_nodes, slave_nodes, modules):
         "tachyon_version": tachyon_v,
         "hadoop_major_version": opts.hadoop_major_version,
         "spark_worker_instances": worker_instances_str,
-        "spark_master_opts": opts.master_opts
+        "spark_master_opts": opts.master_opts,
+        "run_job": opts.run_job
     }
 
     if opts.copy_aws_credentials:
