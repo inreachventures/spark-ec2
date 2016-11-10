@@ -114,4 +114,12 @@ for module in $MODULES; do
   cd /root/spark-ec2  # guard against setup.sh changing the cwd
 done
 
+# Copy jar file from s3 to master
+echo "Copying jar file from s3 on master"
+aws s3 cp s3://inreach-emr-jars/inreach-ml-batch.jar /root/spark/
+
+# Start streaming job
+echo "Kicking off spark job"
+nohup /root/spark/conf/runjob.sh &
+
 popd > /dev/null

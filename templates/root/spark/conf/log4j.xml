@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/"
+    debug="true">
+
+<!-- console appender -->
+<appender name="console" class="org.apache.log4j.ConsoleAppender">
+    <param name="Target" value="System.err" />
+    <layout class="org.apache.log4j.PatternLayout">
+        <param name="ConversionPattern" value="%d{yy/MM/dd HH:mm:ss} %p %c{1}: %m%n" />
+    </layout>
+</appender>
+
+<!-- rolling file appender -->
+<appender name="file" class="org.apache.log4j.RollingFileAppender">
+    <param name="File" value="logs/spark.log" />
+    <param name="Append" value="true" />
+    <param name="ImmediateFlush" value="true" />
+    <param name="MaxFileSize" value="25MB" />
+    <param name="MaxBackupIndex" value="5" />
+    <layout class="org.apache.log4j.PatternLayout">
+        <param name="ConversionPattern" value="%d{yy/MM/dd HH:mm:ss} %p %c{1}: %m%n" />
+    </layout>
+</appender>
+
+<appender name="syslog4j" class="org.productivity.java.syslog4j.impl.log4j.Syslog4jAppender">
+    <param name="Facility" value="user"/>
+    <param name="Protocol" value="sslTcp"/>
+    <param name="Host" value="logs3.papertrailapp.com"/>
+    <param name="Port" value="38468"/>
+    <param name="Ident" value="inreach-prod-ml"/>
+    <layout class="org.apache.log4j.PatternLayout">
+        <param name="ConversionPattern" value="%p: %c{2} %x %m %n" />
+    </layout>
+</appender>
+
+<root>
+    <priority value="INFO" />
+    <appender-ref ref="file" />
+</root>
+<logger name="org.spark_project.jetty" additivity="false">
+    <level value="WARN" />
+    <appender-ref ref="console" />
+</logger>
+<logger name="org.spark_project.jetty.util.component.AbstractLifeCycle" additivity="false">
+    <level value="ERROR" />
+    <appender-ref ref="console" />
+</logger>
+<logger name="org.apache.spark.repl.SparkIMain$exprTyper" additivity="false">
+    <level value="INFO" />
+    <appender-ref ref="console" />
+</logger>
+<logger name="org.apache.spark.repl.SparkILoop$SparkILoopInterpreter" additivity="false">
+    <level value="INFO" />
+    <appender-ref ref="console" />
+</logger>
+<logger name="org.apache.parquet" additivity="false">
+    <level value="ERROR" />
+    <appender-ref ref="console" />
+</logger>
+<logger name="parquet" additivity="false">
+    <level value="ERROR" />
+    <appender-ref ref="console" />
+</logger>
+<logger name="org.apache.hadoop.hive.metastore.RetryingHMSHandler" additivity="false">
+    <level value="FATAL" />
+    <appender-ref ref="console" />
+</logger>
+<logger name="org.apache.hadoop.hive.ql.exec.FunctionRegistry" additivity="false">
+    <level value="ERROR" />
+    <appender-ref ref="console" />
+</logger>
+
+</log4j:configuration>
