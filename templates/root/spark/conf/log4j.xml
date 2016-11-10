@@ -38,6 +38,12 @@
     <priority value="INFO" />
     <appender-ref ref="file" />
 </root>
+
+<logger name="vc.inreach.ml" additivity="false">
+    <level value="INFO" />
+    <appender-ref ref="syslog4j" />
+</logger>
+
 <logger name="org.spark_project.jetty" additivity="false">
     <level value="WARN" />
     <appender-ref ref="console" />
