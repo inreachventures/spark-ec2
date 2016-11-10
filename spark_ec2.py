@@ -876,7 +876,8 @@ def setup_cluster(conn, master_nodes, slave_nodes, opts, deploy_ssh_key):
         opts=opts,
         master_nodes=master_nodes,
         slave_nodes=slave_nodes,
-        modules=modules
+        modules=modules,
+        cluster_name=cluster_name
     )
 
     if opts.deploy_root_dir is not None:
@@ -1071,7 +1072,7 @@ def get_num_disks(instance_type):
 # script to be run on that instance to copy them to other nodes.
 #
 # root_dir should be an absolute path to the directory with the files we want to deploy.
-def deploy_files(conn, root_dir, opts, master_nodes, slave_nodes, modules):
+def deploy_files(conn, root_dir, opts, master_nodes, slave_nodes, modules, cluster_name):
     active_master = get_dns_name(master_nodes[0], opts.private_ips)
 
     num_disks = get_num_disks(opts.instance_type)
@@ -1120,7 +1121,9 @@ def deploy_files(conn, root_dir, opts, master_nodes, slave_nodes, modules):
         "hadoop_major_version": opts.hadoop_major_version,
         "spark_worker_instances": worker_instances_str,
         "spark_master_opts": opts.master_opts,
-        "run_job": opts.run_job
+        "run_job": opts.run_job,
+        "region": opts.region,
+        "cluster_name": cluster_name
     }
 
     if opts.copy_aws_credentials:
@@ -1399,7 +1402,7 @@ def real_main():
             cluster_instances=(master_nodes + slave_nodes),
             cluster_state='ssh-ready'
         )
-        setup_cluster(conn, master_nodes, slave_nodes, opts, True)
+        setup_cluster(conn, master_nodes, slave_nodes, opts, True, cluster_name)
 
     elif action == "destroy":
         (master_nodes, slave_nodes) = get_existing_cluster(
@@ -1414,11 +1417,11 @@ def real_main():
         msg = "Are you sure you want to destroy the cluster {c}? (y/N) ".format(c=cluster_name)
         response = raw_input(msg)
         if response == "y":
-            print("Terminating master...")
-            for inst in master_nodes:
-                inst.terminate()
             print("Terminating slaves...")
             for inst in slave_nodes:
+                inst.terminate()
+            print("Terminating master...")
+            for inst in master_nodes:
                 inst.terminate()
 
             # Delete security groups as well
@@ -1554,7 +1557,7 @@ def real_main():
         opts.master_instance_type = existing_master_type
         opts.instance_type = existing_slave_type
 
-        setup_cluster(conn, master_nodes, slave_nodes, opts, False)
+        setup_cluster(conn, master_nodes, slave_nodes, opts, False, cluster_name)
 
     else:
         print("Invalid action: %s" % action, file=stderr)
