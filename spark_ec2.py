@@ -337,7 +337,7 @@ def parse_args():
         "--instance-profile-name", default=None,
         help="IAM profile name to launch instances under")
     parser.add_option(
-        "--run_job", default="echo NoJob",
+        "--run-job", default="echo NoJob",
         help="command to run on cluster")
 
     (opts, args) = parser.parse_args()
