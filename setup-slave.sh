@@ -43,15 +43,15 @@ if [[ $instance_type == r3* || $instance_type == i2* || $instance_type == hi1* ]
     # To turn TRIM support on, uncomment the following line.
     #echo '/dev/sdc /mnt2  ext4  defaults,noatime,nodiratime,discard 0 0' >> /etc/fstab
     if [[ $instance_type == "r3.8xlarge" ]]; then
-      mkfs.ext4 -E lazy_itable_init=0,lazy_journal_init=0 /dev/sdc      
+      mkfs.ext4 -E lazy_itable_init=0,lazy_journal_init=0 /dev/sdc
       mount -o $EXT4_MOUNT_OPTS /dev/sdc /mnt2
     fi
     # To turn TRIM support on, uncomment the following line.
     #echo '/dev/sdf /mnt2  ext4  defaults,noatime,nodiratime,discard 0 0' >> /etc/fstab
     if [[ $instance_type == "hi1.4xlarge" ]]; then
-      mkfs.ext4 -E lazy_itable_init=0,lazy_journal_init=0 /dev/sdf      
+      mkfs.ext4 -E lazy_itable_init=0,lazy_journal_init=0 /dev/sdf
       mount -o $EXT4_MOUNT_OPTS /dev/sdf /mnt2
-    fi    
+    fi
   fi
 fi
 
@@ -126,6 +126,9 @@ cat /root/spark-ec2/github.hostkey >> /root/.ssh/known_hosts
 echo '#!/bin/bash' > /usr/bin/realpath
 echo 'readlink -e "$@"' >> /usr/bin/realpath
 chmod a+x /usr/bin/realpath
+
+#clean tmp directory
+rm -rf /tmp/*
 
 popd > /dev/null
 
