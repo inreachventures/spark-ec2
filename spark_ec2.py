@@ -337,8 +337,13 @@ def parse_args():
         "--instance-profile-name", default=None,
         help="IAM profile name to launch instances under")
     parser.add_option(
-        "--run-job", default="echo NoJob",
-        help="command to run on cluster")
+        "--scoring", action="store_true", default=False,
+        help="Execute runScoring.sh on cluster"
+    )
+    parser.add_option(
+        "--training", action="store_true", default=False,
+        help="Execute runTraining.sh on cluster"
+    )
 
     (opts, args) = parser.parse_args()
     if len(args) != 2:
@@ -1121,7 +1126,7 @@ def deploy_files(conn, root_dir, opts, master_nodes, slave_nodes, modules, clust
         "hadoop_major_version": opts.hadoop_major_version,
         "spark_worker_instances": worker_instances_str,
         "spark_master_opts": opts.master_opts,
-        "run_job": opts.run_job,
+        "job_type": "",
         "region": opts.region,
         "cluster_name": cluster_name
     }
@@ -1132,6 +1137,12 @@ def deploy_files(conn, root_dir, opts, master_nodes, slave_nodes, modules, clust
     else:
         template_vars["aws_access_key_id"] = ""
         template_vars["aws_secret_access_key"] = ""
+
+    if opts.scoring:
+        template_vars["job_type"] = "Scoring"
+
+    if opts.training:
+        template_vars["job_type"] = "Training"
 
     # Create a temp directory in which we will place all the files to be
     # deployed after we substitue template parameters in them
@@ -1303,6 +1314,10 @@ def get_dns_name(instance, private_ips=False):
 
 def real_main():
     (opts, action, cluster_name) = parse_args()
+
+    if opts.scoring and opts.training:
+        print("ERROR: Can't do scoring and training at the same time")
+        sys.exit(1)
 
     # Input parameter validation
     spark_v = get_validate_spark_version(opts.spark_version, opts.spark_git_repo)

@@ -114,13 +114,18 @@ for module in $MODULES; do
   cd /root/spark-ec2  # guard against setup.sh changing the cwd
 done
 
-# Copy jar file from s3 to master
-echo "Copying jar file from s3 on master"
-aws s3 cp s3://inreach-emr-jars/inreach-ml-batch.jar /root/spark/
+if [ "$JOB_TYPE" != "" ]; then
 
-# Start streaming job
-echo "Kicking off spark job"
-nohup sh -c '$RUN_JOB; yes | /root/spark-ec2/spark-ec2 --region $REGION destroy $CLUSTER_NAME' &
-sleep 20
+  # Copy jar file from s3 to master
+  echo "Copying jar file from s3 on master"
+  aws s3 cp s3://inreach-emr-jars/$JOB_TYPE/inreach-ml-batch.jar /root/spark/
+
+  # Start streaming job
+  echo "Kicking off spark job"
+  nohup sh -c 'run$JOB_TYPE.sh; yes | /root/spark-ec2/spark-ec2 --region $REGION destroy $CLUSTER_NAME' &
+  sleep 20
+  
+fi
+
 
 popd > /dev/null
