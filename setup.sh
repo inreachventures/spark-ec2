@@ -122,9 +122,9 @@ if [ "$JOB_TYPE" != "" ]; then
 
   # Start streaming job
   echo "Kicking off spark job"
-  nohup sh -c 'run$JOB_TYPE.sh; yes | /root/spark-ec2/spark-ec2 --region $REGION destroy $CLUSTER_NAME' &
+  nohup sh -c 'run$JOB_TYPE.sh; if [ $? != 0 ]; then /root/spark-ec2/spark-ec2 --region $REGION stop $CLUSTER_NAME; else /root/spark-ec2/spark-ec2 --region $REGION destroy $CLUSTER_NAME; fi' &
   sleep 20
-  
+
 fi
 
 
