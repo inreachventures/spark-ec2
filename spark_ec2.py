@@ -908,7 +908,7 @@ def setup_spark_cluster(master, opts):
         print("Ganglia started at http://%s:5080/ganglia" % master)
 
     if opts.scoring or opts.training:
-        slack = Slacker($SLACK_API_KEY)
+        slack = Slacker(os.getenv('SLACK_API_KEY'))
         slack.chat.post_message('#ml-deploys', "Spark cluster started at http://%s:8080\nSpark UI started at http://%s:4040\nGanglia started at http://%s:5080/ganglia" % (master, master, master))
 
 def is_ssh_available(host, opts, print_ssh_output=True):
