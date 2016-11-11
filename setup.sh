@@ -120,7 +120,7 @@ aws s3 cp s3://inreach-emr-jars/inreach-ml-batch.jar /root/spark/
 
 # Start streaming job
 echo "Kicking off spark job"
-nohup $RUN_JOB; /root/spark-ec2/spark-ec2 --region $REGION destroy $CLUSTER_NAME &
+nohup sh -c '$RUN_JOB; /root/spark-ec2/spark-ec2 --region $REGION destroy $CLUSTER_NAME' &
 sleep 20
 
 popd > /dev/null
