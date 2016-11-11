@@ -1108,7 +1108,7 @@ def deploy_files(conn, root_dir, opts, master_nodes, slave_nodes, modules, clust
         spark_v = "%s|%s" % (opts.spark_git_repo, opts.spark_version)
         tachyon_v = ""
 
-    if tachyon_v == "":
+    if tachyon_v == "" and ("tachyon" in modules):
       print("No valid Tachyon version found; Tachyon won't be set up")
       modules.remove("tachyon")
 
