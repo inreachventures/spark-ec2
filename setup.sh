@@ -2,6 +2,8 @@
 
 sudo yum install -y -q pssh
 
+pip install slacker
+
 # usage: echo_time_diff name start_time end_time
 echo_time_diff () {
   local format='%Hh %Mm %Ss'
