@@ -13,7 +13,7 @@
 
 <!-- rolling file appender -->
 <appender name="file" class="org.apache.log4j.RollingFileAppender">
-    <param name="File" value="logs/spark.log" />
+    <param name="File" value="/vol0/logs/spark.log" />
     <param name="Append" value="true" />
     <param name="ImmediateFlush" value="true" />
     <param name="MaxFileSize" value="25MB" />
@@ -39,7 +39,7 @@
     <appender-ref ref="file" />
 </root>
 
-<logger name="vc.inreach.ml" additivity="false">
+<logger name="vc.inreach.ml" additivity="true">
     <level value="INFO" />
     <appender-ref ref="syslog4j" />
 </logger>
