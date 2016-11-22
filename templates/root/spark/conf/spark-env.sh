@@ -8,7 +8,7 @@ if [ -n "{{spark_worker_instances}}" ]; then
   export SPARK_WORKER_INSTANCES={{spark_worker_instances}}
 fi
 export SPARK_WORKER_CORES={{spark_worker_cores}}
-
+export SPARK_EXECUTOR_INSTANCES={{spark_executor_instances}}
 export HADOOP_HOME="/root/ephemeral-hdfs"
 export SPARK_MASTER_IP={{active_master}}
 export MASTER=`cat /root/spark-ec2/cluster-url`
