@@ -42,7 +42,6 @@ import warnings
 from datetime import datetime
 from optparse import OptionParser
 from sys import stderr
-from slacker import Slacker
 
 if sys.version < "3":
     from urllib2 import urlopen, Request, HTTPError
@@ -1115,6 +1114,7 @@ def deploy_files(conn, root_dir, opts, master_nodes, slave_nodes, modules, clust
     master_addresses = [get_dns_name(i, opts.private_ips) for i in master_nodes]
     slave_addresses = [get_dns_name(i, opts.private_ips) for i in slave_nodes]
     worker_instances_str = "%d" % opts.worker_instances if opts.worker_instances else ""
+    spark_executor_instances_str = "%d" % opts.slaves if opts.slaves else ""
     template_vars = {
         "master_list": '\n'.join(master_addresses),
         "active_master": active_master,
@@ -1132,7 +1132,7 @@ def deploy_files(conn, root_dir, opts, master_nodes, slave_nodes, modules, clust
         "spark_master_opts": opts.master_opts,
         "job_type": "",
         "region": opts.region,
-        "spark_executor_instances": opts.slaves,
+        "spark_executor_instances": spark_executor_instances_str,
         "cluster_name": cluster_name
     }
 
