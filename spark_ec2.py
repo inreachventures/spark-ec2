@@ -1134,6 +1134,7 @@ def deploy_files(conn, root_dir, opts, master_nodes, slave_nodes, modules, clust
         "job_type": "",
         "region": opts.region,
         "spark_executor_instances": spark_executor_instances_str,
+        "classifier": "RandomForestComposingVsClassifier",
         "cluster_name": cluster_name
     }
 
@@ -1149,6 +1150,10 @@ def deploy_files(conn, root_dir, opts, master_nodes, slave_nodes, modules, clust
 
     if opts.training:
         template_vars["job_type"] = "Training"
+
+    classifier = os.getenv('CI_BRANCH').split("#")
+    if len(classifier) > 1:
+        template_vars["classifier"] = classifier[1]
 
     # Create a temp directory in which we will place all the files to be
     # deployed after we substitue template parameters in them
