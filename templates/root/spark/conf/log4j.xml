@@ -13,7 +13,19 @@
 
 <!-- rolling file appender -->
 <appender name="file" class="org.apache.log4j.RollingFileAppender">
-    <param name="File" value="/vol0/logs/spark.log" />
+    <param name="File" value="/root/spark/logs/spark.log" />
+    <param name="Append" value="true" />
+    <param name="ImmediateFlush" value="true" />
+    <param name="MaxFileSize" value="25MB" />
+    <param name="MaxBackupIndex" value="5" />
+    <layout class="org.apache.log4j.PatternLayout">
+        <param name="ConversionPattern" value="%d{yy/MM/dd HH:mm:ss} %p %c{1}: %m%n" />
+    </layout>
+</appender>
+
+<!-- rolling file appender -->
+<appender name="file_vc" class="org.apache.log4j.RollingFileAppender">
+    <param name="File" value="/root/spark/logs/spark_vc.log" />
     <param name="Append" value="true" />
     <param name="ImmediateFlush" value="true" />
     <param name="MaxFileSize" value="25MB" />
@@ -37,6 +49,11 @@
 <logger name="vc.inreach.ml" additivity="true">
     <level value="INFO" />
     <appender-ref ref="syslog4j" />
+</logger>
+
+<logger name="vc.inreach.ml" additivity="true">
+    <level value="INFO" />
+    <appender-ref ref="file_vc" />
 </logger>
 
 <logger name="org.spark_project.jetty" additivity="false">
