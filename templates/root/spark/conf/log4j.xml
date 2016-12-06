@@ -49,10 +49,6 @@
 <logger name="vc.inreach.ml" additivity="true">
     <level value="INFO" />
     <appender-ref ref="syslog4j" />
-</logger>
-
-<logger name="vc.inreach.ml" additivity="true">
-    <level value="INFO" />
     <appender-ref ref="file_vc" />
 </logger>
 
@@ -60,30 +56,37 @@
     <level value="WARN" />
     <appender-ref ref="console" />
 </logger>
+
 <logger name="org.spark_project.jetty.util.component.AbstractLifeCycle" additivity="false">
     <level value="ERROR" />
     <appender-ref ref="console" />
 </logger>
+
 <logger name="org.apache.spark.repl.SparkIMain$exprTyper" additivity="false">
     <level value="INFO" />
     <appender-ref ref="console" />
 </logger>
+
 <logger name="org.apache.spark.repl.SparkILoop$SparkILoopInterpreter" additivity="false">
     <level value="INFO" />
     <appender-ref ref="console" />
 </logger>
+
 <logger name="org.apache.parquet" additivity="false">
     <level value="ERROR" />
     <appender-ref ref="console" />
 </logger>
+
 <logger name="parquet" additivity="false">
     <level value="ERROR" />
     <appender-ref ref="console" />
 </logger>
+
 <logger name="org.apache.hadoop.hive.metastore.RetryingHMSHandler" additivity="false">
     <level value="FATAL" />
     <appender-ref ref="console" />
 </logger>
+
 <logger name="org.apache.hadoop.hive.ql.exec.FunctionRegistry" additivity="false">
     <level value="ERROR" />
     <appender-ref ref="console" />
