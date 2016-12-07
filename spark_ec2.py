@@ -896,11 +896,10 @@ def setup_cluster(conn, master_nodes, slave_nodes, opts, deploy_ssh_key, cluster
         )
 
     print("Running setup on master...")
-    setup_spark_cluster(master, opts)
+    setup_spark_cluster(master, opts, cluster_name)
     print("Done!")
 
-
-def setup_spark_cluster(master, opts):
+def setup_spark_cluster(master, opts, cluster_name):
     ssh(master, opts, "chmod u+x spark-ec2/setup.sh")
     ssh(master, opts, "spark-ec2/setup.sh")
     print("Spark standalone cluster started at http://%s:8080" % master)
@@ -910,7 +909,7 @@ def setup_spark_cluster(master, opts):
 
     if opts.scoring or opts.training:
         slack = Slacker(os.getenv('SLACK_API_KEY'))
-        slack.chat.post_message('#ml-deploys', "Spark cluster started at http://%s:8080\nSpark UI started at http://%s:4040\nGanglia started at http://%s:5080/ganglia" % (master, master, master))
+        slack.chat.post_message('#ml-deploys', "Spark cluster started at http://%s:8080\nSpark UI started at http://%s:4040\nGanglia started at http://%s:5080/ganglia\nPapertrail logging at http://papertrailapp.com/systems/%s/events" % (master, master, master, cluster_name))
 
 def is_ssh_available(host, opts, print_ssh_output=True):
     """
