@@ -118,10 +118,6 @@ done
 
 if [ "$JOB_TYPE" != "" ]; then
 
-  # Copy jar file from s3 to master
-  echo "Copying jar file from s3 on master"
-  aws s3 cp s3://inreach-emr-jars/$JOB_TYPE/inreach-ml-batch.jar /root/spark/
-
   # Start streaming job
   echo "Kicking off spark job"
   nohup sh -c '/root/spark-ec2/run$JOB_TYPE.sh; if [ $? != 0 ]; then yes | /root/spark-ec2/spark-ec2 --region $REGION stop $CLUSTER_NAME; else yes | /root/spark-ec2/spark-ec2 --region $REGION destroy $CLUSTER_NAME; fi' &

@@ -41,6 +41,7 @@
     <param name="Host" value="logs3.papertrailapp.com"/>
     <param name="Port" value="38468"/>
     <param name="Ident" value="inreach-prod-ml"/>
+    <param name="LocalHost" value="{{cluster_name}}"/>
     <layout class="org.apache.log4j.PatternLayout">
         <param name="ConversionPattern" value="%p: %c{2} %x %m %n" />
     </layout>

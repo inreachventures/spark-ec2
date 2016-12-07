@@ -1136,6 +1136,7 @@ def deploy_files(conn, root_dir, opts, master_nodes, slave_nodes, modules, clust
         "region": opts.region,
         "spark_executor_instances": spark_executor_instances_str,
         "classifier": "RandomForestComposingVsClassifier",
+        "ci_branch": os.getenv('CI_BRANCH'),
         "cluster_name": cluster_name
     }
 
