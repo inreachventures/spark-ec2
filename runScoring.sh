@@ -1,2 +1,2 @@
 #/bin/sh
-/root/spark/bin/spark-submit --class vc.inreach.ml.scoring.SQSOrganizationScoringStream --deploy-mode client --driver-memory 6g --driver-cores 2 /jar/inreach-ml-batch.jar -model_path s3n://inreach-ml-models/ -aws remote -scoring_model VsScoringModel -tag $CLUSTER_NAME:$CI_BRANCH -folds 5 -use_cross_validation true
+/root/spark/bin/spark-submit --class vc.inreach.ml.scoring.SQSOrganizationScoringStream --deploy-mode client --driver-memory 6g --driver-cores 2 /jar/inreach-ml-batch.jar -model_path s3n://inreach-ml-models/ -aws remote -scoring_model VsScoringModel -tag $CLUSTER_NAME:$CI_BRANCH

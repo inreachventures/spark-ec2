@@ -346,6 +346,10 @@ def parse_args():
         "--training", action="store_true", default=False,
         help="Execute runTraining.sh on cluster"
     )
+    parser.add_option(
+        "--training_official", action="store_true", default=False,
+        help="Execute runTrainingOfficial.sh on cluster"
+    )
 
     (opts, args) = parser.parse_args()
     if len(args) != 2:
@@ -907,7 +911,7 @@ def setup_spark_cluster(master, opts, cluster_name):
     if opts.ganglia:
         print("Ganglia started at http://%s:5080/ganglia" % master)
 
-    if opts.scoring or opts.training:
+    if opts.scoring or opts.training or opts.training_official:
         slack = Slacker(os.getenv('SLACK_API_KEY'))
         slack.chat.post_message('#ml-deploys', "Spark cluster started at http://%s:8080\nSpark UI started at http://%s:4040\nGanglia started at http://%s:5080/ganglia\nPapertrail logging at http://papertrailapp.com/systems/%s/events" % (master, master, master, cluster_name))
 
@@ -1152,6 +1156,9 @@ def deploy_files(conn, root_dir, opts, master_nodes, slave_nodes, modules, clust
     if opts.training:
         template_vars["job_type"] = "Training"
 
+    if opts.training_official:
+        template_vars["job_type"] = "TrainingOfficial"
+
     classifier = os.getenv('CI_BRANCH').split("#")
     if len(classifier) > 1:
         template_vars["classifier"] = classifier[1]
@@ -1327,7 +1334,7 @@ def get_dns_name(instance, private_ips=False):
 def real_main():
     (opts, action, cluster_name) = parse_args()
 
-    if opts.scoring and opts.training:
+    if opts.scoring and (opts.training or opts.training_official):
         print("ERROR: Can't do scoring and training at the same time")
         sys.exit(1)
 
