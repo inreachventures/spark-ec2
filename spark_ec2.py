@@ -529,8 +529,9 @@ def launch_cluster(conn, opts, cluster_name):
             user_data_content = user_data_file.read()
 
     print("Setting up security groups...")
-    master_group = get_or_make_group(conn, cluster_name + "-master", opts.vpc_id)
-    slave_group = get_or_make_group(conn, cluster_name + "-slaves", opts.vpc_id)
+    cluster_name_without_appendix = cluster_name.split("_")[0]
+    master_group = get_or_make_group(conn, cluster_name_without_appendix + "-master", opts.vpc_id)
+    slave_group = get_or_make_group(conn, cluster_name_without_appendix + "-slaves", opts.vpc_id)
     authorized_address = opts.authorized_address
     if master_group.rules == []:  # Group was just now created
         if opts.vpc_id is None:
@@ -1120,6 +1121,10 @@ def deploy_files(conn, root_dir, opts, master_nodes, slave_nodes, modules, clust
     slave_addresses = [get_dns_name(i, opts.private_ips) for i in slave_nodes]
     worker_instances_str = "%d" % opts.worker_instances if opts.worker_instances else ""
     spark_executor_instances_str = "%d" % opts.slaves if opts.slaves else ""
+    ci_branch = os.getenv('CI_BRANCH').split("#")
+    if ci_branch is None:
+        ci_branch = ""
+
     template_vars = {
         "master_list": '\n'.join(master_addresses),
         "active_master": active_master,
@@ -1139,7 +1144,7 @@ def deploy_files(conn, root_dir, opts, master_nodes, slave_nodes, modules, clust
         "region": opts.region,
         "spark_executor_instances": spark_executor_instances_str,
         "classifier": "RandomForestComposingVsClassifier",
-        "ci_branch": os.getenv('CI_BRANCH'),
+        "ci_branch": ci_branch,
         "cluster_name": cluster_name
     }
 
@@ -1159,9 +1164,11 @@ def deploy_files(conn, root_dir, opts, master_nodes, slave_nodes, modules, clust
     if opts.training_official:
         template_vars["job_type"] = "TrainingOfficial"
 
-    classifier = os.getenv('CI_BRANCH').split("#")
-    if len(classifier) > 1:
-        template_vars["classifier"] = classifier[1]
+    classifier = os.getenv('CI_BRANCH')
+    if not(classifier is None):
+        classifier = classifier.split("#")
+        if len(classifier) > 1:
+            template_vars["classifier"] = classifier[1]
 
     # Create a temp directory in which we will place all the files to be
     # deployed after we substitue template parameters in them
