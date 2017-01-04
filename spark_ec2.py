@@ -1121,7 +1121,7 @@ def deploy_files(conn, root_dir, opts, master_nodes, slave_nodes, modules, clust
     slave_addresses = [get_dns_name(i, opts.private_ips) for i in slave_nodes]
     worker_instances_str = "%d" % opts.worker_instances if opts.worker_instances else ""
     spark_executor_instances_str = "%d" % opts.slaves if opts.slaves else ""
-    ci_branch = os.getenv('CI_BRANCH').split("#")
+    ci_branch = os.getenv('CI_BRANCH')
     if ci_branch is None:
         ci_branch = ""
 
