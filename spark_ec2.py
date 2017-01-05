@@ -278,6 +278,10 @@ def parse_args():
         help="If specified, launch slaves as spot instances with the given " +
              "maximum price (in dollars)")
     parser.add_option(
+        "--master-spot-price", metavar="PRICE", type="float",
+        help="If specified, launch master as spot instance with the given " +
+             "maximum price (in dollars)")
+    parser.add_option(
         "--ganglia", action="store_true", default=True,
         help="Setup Ganglia monitoring on cluster (default: %default). NOTE: " +
              "the Ganglia page will be publicly accessible")
@@ -744,29 +748,81 @@ def launch_cluster(conn, opts, cluster_name):
             master_type = opts.instance_type
         if opts.zone == 'all':
             opts.zone = random.choice(conn.get_all_zones()).name
-        master_res = image.run(
-            key_name=opts.key_pair,
-            security_group_ids=[master_group.id] + additional_group_ids,
-            instance_type=master_type,
-            placement=opts.zone,
-            min_count=1,
-            max_count=1,
-            block_device_map=block_map,
-            subnet_id=opts.subnet_id,
-            placement_group=opts.placement_group,
-            user_data=user_data_content,
-            instance_initiated_shutdown_behavior=opts.instance_initiated_shutdown_behavior,
-            instance_profile_name=opts.instance_profile_name)
+        if opts.master_spot_price is not None:
+            # Launch spot instances with the requested price
+            print("Requesting master as spot instance with price $%.3f" %
+                  (opts.master_spot_price))
+            master_reqs = conn.request_spot_instances(
+                key_name=opts.key_pair,
+                price=opts.master_spot_price,
+                image_id=opts.ami,
+                security_group_ids=[master_group.id] + additional_group_ids,
+                instance_type=master_type,
+                placement=opts.zone,
+                count=1,
+                block_device_map=block_map,
+                subnet_id=opts.subnet_id,
+                placement_group=opts.placement_group,
+                user_data=user_data_content,
+                instance_profile_name=opts.instance_profile_name)
+            my_req_ids += [req.id for req in master_reqs]
 
-        master_nodes = master_res.instances
-        print("Launched master in %s, regid = %s" % (zone, master_res.id))
+            print("Waiting for master spot instance to be granted...")
+            try:
+                while True:
+                    time.sleep(10)
+                    reqs = conn.get_all_spot_instance_requests()
+                    id_to_req = {}
+                    for r in reqs:
+                        id_to_req[r.id] = r
+                    active_instance_ids = []
+                    for i in my_req_ids:
+                        if i in id_to_req and id_to_req[i].state == "active":
+                            active_instance_ids.append(id_to_req[i].instance_id)
+                    if len(active_instance_ids) == 1:
+                        print("Master spot instance granted")
+                        reservations = conn.get_all_reservations(active_instance_ids)
+                        master_nodes = []
+                        for r in reservations:
+                            master_nodes += r.instances
+                        break
+                    else:
+                        print("%d of %d masters granted, waiting longer" % (
+                            len(active_instance_ids), 1))
+            except:
+                print("Canceling spot instance requests")
+                conn.cancel_spot_instance_requests(my_req_ids)
+                # Log a warning if any of these requests actually launched instances:
+                (master_nodes, slave_nodes) = get_existing_cluster(
+                    conn, opts, cluster_name, die_on_error=False)
+                running = len(master_nodes) + len(slave_nodes)
+                if running:
+                    print(("WARNING: %d instances are still running" % running), file=stderr)
+                sys.exit(0)
+        else:
+            master_res = image.run(
+                key_name=opts.key_pair,
+                security_group_ids=[master_group.id] + additional_group_ids,
+                instance_type=master_type,
+                placement=opts.zone,
+                min_count=1,
+                max_count=1,
+                block_device_map=block_map,
+                subnet_id=opts.subnet_id,
+                placement_group=opts.placement_group,
+                user_data=user_data_content,
+                instance_initiated_shutdown_behavior=opts.instance_initiated_shutdown_behavior,
+                instance_profile_name=opts.instance_profile_name)
+
+            master_nodes = master_res.instances
+            print("Launched master in %s, regid = %s" % (zone, master_res.id))
 
     # This wait time corresponds to SPARK-4983
     print("Waiting for AWS to propagate instance metadata...")
     time.sleep(15)
 
     # Give the instances descriptive names and set additional tags
-    additional_tags = {}
+    additional_tags = {"Cluster": cluster_name}
     if opts.additional_tags.strip():
         additional_tags = dict(
             map(str.strip, tag.split(':', 1)) for tag in opts.additional_tags.split(',')
@@ -775,13 +831,13 @@ def launch_cluster(conn, opts, cluster_name):
     print('Applying tags to master nodes')
     for master in master_nodes:
         master.add_tags(
-            dict(additional_tags, Name='{cn}-master-{iid}'.format(cn=cluster_name, iid=master.id))
+            dict(additional_tags, Name='{cn}-master'.format(cn=cluster_name))
         )
 
     print('Applying tags to slave nodes')
     for slave in slave_nodes:
         slave.add_tags(
-            dict(additional_tags, Name='{cn}-slave-{iid}'.format(cn=cluster_name, iid=slave.id))
+            dict(additional_tags, Name='{cn}-slave'.format(cn=cluster_name))
         )
 
     if opts.tag_volumes:
@@ -806,7 +862,7 @@ def get_existing_cluster(conn, opts, cluster_name, die_on_error=True):
     print("Searching for existing cluster {c} in region {r}...".format(
           c=cluster_name, r=opts.region))
 
-    def get_instances(group_names):
+    def get_instances(group_names, cluster_name):
         """
         Get all non-terminated instances that belong to any of the provided security groups.
 
@@ -814,12 +870,13 @@ def get_existing_cluster(conn, opts, cluster_name, die_on_error=True):
             http://docs.aws.amazon.com/cli/latest/reference/ec2/describe-instances.html#options
         """
         reservations = conn.get_all_reservations(
-            filters={"instance.group-name": group_names})
+            filters={"instance.group-name": group_names, "tag:Cluster": cluster_name})
         instances = itertools.chain.from_iterable(r.instances for r in reservations)
         return [i for i in instances if i.state not in ["shutting-down", "terminated"]]
 
-    master_instances = get_instances([cluster_name + "-master"])
-    slave_instances = get_instances([cluster_name + "-slaves"])
+    cluster_name_without_appendix = cluster_name.split("_")[0]
+    master_instances = get_instances([cluster_name_without_appendix + "-master"], cluster_name)
+    slave_instances = get_instances([cluster_name_without_appendix + "-slaves"], cluster_name)
 
     if any((master_instances, slave_instances)):
         print("Found {m} master{plural_m}, {s} slave{plural_s}.".format(
