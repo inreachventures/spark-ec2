@@ -752,6 +752,7 @@ def launch_cluster(conn, opts, cluster_name):
             # Launch spot instances with the requested price
             print("Requesting master as spot instance with price $%.3f" %
                   (opts.master_spot_price))
+            my_req_ids = []
             master_reqs = conn.request_spot_instances(
                 key_name=opts.key_pair,
                 price=opts.master_spot_price,
@@ -781,10 +782,12 @@ def launch_cluster(conn, opts, cluster_name):
                             active_instance_ids.append(id_to_req[i].instance_id)
                     if len(active_instance_ids) == 1:
                         print("Master spot instance granted")
+                        print(active_instance_ids)
                         reservations = conn.get_all_reservations(active_instance_ids)
                         master_nodes = []
                         for r in reservations:
                             master_nodes += r.instances
+                            print(r.instances)
                         break
                     else:
                         print("%d of %d masters granted, waiting longer" % (
