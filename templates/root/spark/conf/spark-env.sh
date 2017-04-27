@@ -3,7 +3,7 @@
 export SPARK_LOCAL_DIRS="{{spark_local_dirs}}"
 
 # Standalone cluster options
-if [ "$SLAVES" = "" ]
+if [ "$SLAVES" != "" ]
 then
   export SPARK_MASTER_OPTS="{{spark_master_opts}}"
   export SPARK_WORKER_CORES={{spark_worker_cores}}

@@ -82,6 +82,7 @@ template_vars = {
   "slave_list": os.getenv("SLAVES"),
   "spark_executor_instances": os.getenv("SPARK_EXECUTOR_INSTANCES"),
   "spark_worker_instances": slave_ram_mb,
+  "spark_worker_mem": "%dm" % slave_ram_mb,
   "cluster_name": os.getenv("CLUSTER_NAME")
 }
 
