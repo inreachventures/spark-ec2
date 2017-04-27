@@ -62,6 +62,7 @@ else:
     tachyon_mb = master_ram_kb / 1024
     system_ram_kb = master_ram_kb
     system_ram_mb = system_ram_kb / 1024
+    slave_ram_mb = system_ram_mb
 
 template_vars = {
   "master_list": os.getenv("MASTERS"),
@@ -78,16 +79,16 @@ template_vars = {
   "system_ram_mb": "%d" % system_ram_mb,
   "aws_access_key_id": os.getenv("AWS_ACCESS_KEY_ID"),
   "aws_secret_access_key": os.getenv("AWS_SECRET_ACCESS_KEY"),
+  "slave_list": os.getenv("SLAVES"),
   "spark_executor_instances": os.getenv("SPARK_EXECUTOR_INSTANCES"),
+  "spark_worker_instances": slave_ram_mb,
   "cluster_name": os.getenv("CLUSTER_NAME")
 }
 
 if (first_slave != ""):
-    template_vars["spark_worker_mem"] = "%dm" % slave_ram_mb
-    template_vars["slave_list"] = os.getenv("SLAVES")
     template_vars["spark_worker_instances"] = worker_instances_str
     template_vars["spark_worker_cores"] = "%d" %  worker_cores
-    
+
 template_dir="/root/spark-ec2/templates"
 
 for path, dirs, files in os.walk(template_dir):
