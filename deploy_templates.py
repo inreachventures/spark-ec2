@@ -88,6 +88,9 @@ template_vars = {
 if (first_slave != ""):
     template_vars["spark_worker_instances"] = worker_instances_str
     template_vars["spark_worker_cores"] = "%d" %  worker_cores
+else:
+    template_vars["spark_worker_instances"] = ""
+    template_vars["spark_worker_cores"] = ""
 
 template_dir="/root/spark-ec2/templates"
 
