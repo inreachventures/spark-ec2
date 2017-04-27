@@ -1498,9 +1498,6 @@ def real_main():
         opts.zone = random.choice(conn.get_all_zones()).name
 
     if action == "launch":
-        if opts.slaves <= 0:
-            print("ERROR: You have to start at least 1 slave", file=sys.stderr)
-            sys.exit(1)
         if opts.resume:
             (master_nodes, slave_nodes) = get_existing_cluster(conn, opts, cluster_name)
         else:
