@@ -488,6 +488,7 @@ EC2_INSTANCE_TYPES = {
     "t2.small":    "hvm",
     "t2.medium":   "hvm",
     "t2.large":    "hvm",
+    "t2.xlarge":   "hvm"
 }
 
 
