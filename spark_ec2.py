@@ -364,6 +364,10 @@ def parse_args():
         "--testing", action="store_true", default=False,
         help="Execute runTesting.sh on cluster"
     )
+    parser.add_option(
+        "--testing_official", action="store_true", default=False,
+        help="Execute runTestingOfficial.sh on cluster"
+    )
 
     (opts, args) = parser.parse_args()
     if len(args) != 2:
@@ -983,7 +987,7 @@ def setup_spark_cluster(master, opts, cluster_name):
     if opts.ganglia:
         print("Ganglia started at http://%s:5080/ganglia" % master)
 
-    if opts.scoring or opts.training or opts.training_official or opts.scaling_official or opts.testing:
+    if opts.scoring or opts.training or opts.training_official or opts.scaling_official or opts.testing or opts.testing_official:
         slack = Slacker(os.getenv('SLACK_API_KEY'))
         slack.chat.post_message('#ml-deploys', "Spark cluster started at http://%s:8080\nSpark UI started at http://%s:4040\nGanglia started at http://%s:5080/ganglia\nPapertrail logging at http://papertrailapp.com/systems/%s/events" % (master, master, master, cluster_name))
 
@@ -1242,6 +1246,9 @@ def deploy_files(conn, root_dir, opts, master_nodes, slave_nodes, modules, clust
     if opts.testing:
         template_vars["job_type"] = "Testing"
 
+    if opts.testing_official:
+        template_vars["job_type"] = "TestingOfficial"
+
     classifier = os.getenv('CI_BRANCH')
     if opts.training or opts.training_official:
         if not(classifier is None):
@@ -1249,7 +1256,7 @@ def deploy_files(conn, root_dir, opts, master_nodes, slave_nodes, modules, clust
             if len(classifier) > 1:
                 template_vars["classifier"] = classifier[1]
 
-    if opts.testing:
+    if opts.testing or opts.testing_official:
         if not(classifier is None):
             classifier = classifier.split("#")
             if len(classifier) > 1:
