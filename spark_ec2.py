@@ -1200,6 +1200,10 @@ def deploy_files(conn, root_dir, opts, master_nodes, slave_nodes, modules, clust
     if ci_branch is None:
         ci_branch = ""
 
+    ci_url = os.getenv('CI_BUILD_URL')
+    if ci_url is None:
+        ci_url = ""
+
     template_vars = {
         "master_list": '\n'.join(master_addresses),
         "active_master": active_master,
@@ -1221,6 +1225,7 @@ def deploy_files(conn, root_dir, opts, master_nodes, slave_nodes, modules, clust
         "classifier": "RandomForestComposingVsClassifier",
         "from_timestamp": "",
         "ci_branch": ci_branch,
+        "ci_url": ci_url,
         "cluster_name": cluster_name
     }
 

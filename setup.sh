@@ -100,6 +100,9 @@ done
 echo "Creating local config files..."
 ./deploy_templates.py
 
+echo "Linking termination script"
+ln -s ./ec2-terminate /etc/rc0.d/S01ec2-terminate
+
 # Copy spark conf by default
 echo "Deploying Spark config files..."
 chmod u+x /root/spark/conf/spark-env.sh
