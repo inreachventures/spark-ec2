@@ -101,7 +101,7 @@ echo "Creating local config files..."
 ./deploy_templates.py
 
 echo "Linking termination script"
-ln -s ./ec2-terminate /etc/rc0.d/S01ec2-terminate
+ln -s /root/spark-ec2/ec2-shutdown /etc/rc0.d/S01ec2-shutdown
 
 # Copy spark conf by default
 echo "Deploying Spark config files..."
