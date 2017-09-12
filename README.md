@@ -1,3 +1,26 @@
+# InReach Ventures
+
+There are 4 scripts to launch clusters of Spark machines.  
+
+- Training: to run a training job with limited cross-validation
+- Training Official: to run an official training job with full cross-validation. The resulting models are used in production by the scorer
+- Scaling: to compute the trends across all organizations
+- Scoring: starts a scorer. The official model to use is saved in the inreach-ml codebase (inreach-ml-core/main/ressources/application_remote.conf)
+- Testing: to test trained models from S3::/inreach-models against recent data and generates a confusion matrix (testing_v_X#timestamp_from_time_to_test, make sure to use a timestamp that does not include companies that were used in the training data)
+- Testing Official: same as above but from models in S3://inreach-models-official
+
+Spark Settings  
+A glossary: https://spark.apache.org/docs/latest/cluster-overview.html
+See templates/root/spark/conf/spark-env.ssh
+
+CodeShip VM spins up the cluster and runs the script.  
+See CodeShip deployment options: https://app.codeship.com/projects/198189/deployment_branches/161300
+
+To make a new deployment, you need to make a release on GitHub following the name conventions:  
+training_v_N, scaling_v_N, training_official_v__N, testing_v_X#timestamp
+
+The 'spark-ec2.py' script is the main launch script. It ssh into the machines and starts everything.
+
 # EC2 Cluster Setup for Apache Spark
 
 `spark-ec2` allows you
@@ -6,8 +29,8 @@ to launch, manage and shut down
 on Amazon EC2. It automatically sets up Apache Spark and
 [HDFS](https://hadoop.apache.org/docs/stable/hadoop-project-dist/hadoop-hdfs/HdfsUserGuide.html)
 on the cluster for you. This guide describes
-how to use `spark-ec2` to launch clusters, how to run jobs on them, and how 
-to shut them down. It assumes you've already signed up for an EC2 account 
+how to use `spark-ec2` to launch clusters, how to run jobs on them, and how
+to shut them down. It assumes you've already signed up for an EC2 account
 on the [Amazon Web Services site](http://aws.amazon.com/).
 
 `spark-ec2` is designed to manage multiple named clusters. You can
@@ -69,7 +92,7 @@ types, and the default type is `m1.large` (which has 2 cores and 7.5 GB
 RAM). Refer to the Amazon pages about [EC2 instance
 types](http://aws.amazon.com/ec2/instance-types) and [EC2
 pricing](http://aws.amazon.com/ec2/#pricing) for information about other
-instance types. 
+instance types.
 -    `--region=<ec2-region>` specifies an EC2 region in which to launch
 instances. The default region is `us-east-1`.
 -    `--zone=<ec2-zone>` can be used to specify an EC2 availability zone
@@ -145,7 +168,7 @@ export AWS_ACCESS_KEY_ID=ABCDEFG1234567890123
 
 You can edit `/root/spark/conf/spark-env.sh` on each machine to set Spark configuration options, such
 as JVM options. This file needs to be copied to **every machine** to reflect the change. The easiest way to
-do this is to use a script we provide called `copy-dir`. First edit your `spark-env.sh` file on the master, 
+do this is to use a script we provide called `copy-dir`. First edit your `spark-env.sh` file on the master,
 then run `~/spark-ec2/copy-dir /root/spark/conf` to RSYNC it to all the workers.
 
 The [configuration guide](configuration.html) describes the available configuration options.
@@ -195,20 +218,20 @@ In addition to using a single input file, you can also use a directory of files 
 This repository contains the set of scripts used to setup a Spark cluster on
 EC2. These scripts are intended to be used by the default Spark AMI and is *not*
 expected to work on other AMIs. If you wish to start a cluster using Spark,
-please refer to http://spark-project.org/docs/latest/ec2-scripts.html 
+please refer to http://spark-project.org/docs/latest/ec2-scripts.html
 
 ## spark-ec2 Internals
 
 The Spark cluster setup is guided by the values set in `ec2-variables.sh`.`setup.sh`
 first performs basic operations like enabling ssh across machines, mounting ephemeral
 drives and also creates files named `/root/spark-ec2/masters`, and `/root/spark-ec2/slaves`.
-Following that every module listed in `MODULES` is initialized. 
+Following that every module listed in `MODULES` is initialized.
 
 To add a new module, you will need to do the following:
 
 1. Create a directory with the module's name.
 
-2. Optionally add a file named `init.sh`. This is called before templates are configured 
+2. Optionally add a file named `init.sh`. This is called before templates are configured
 and can be used to install any pre-requisites.
 
 3. Add any files that need to be configured based on the cluster setup to `templates/`.
