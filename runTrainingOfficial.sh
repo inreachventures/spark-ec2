@@ -5,11 +5,9 @@
                              --driver-cores 14 \
                              /jar/inreach-ml-training.jar \
                              -data_path s3n://inreach-prod-dynamo-data/dynamoDbData_20170904/ \
-                             -model_path s3n://inreach-ml-models-official/ \
-                             -aws remote \
+                             -aws official \
                              -classifier $CLASSIFIER \
                              -tag $CLUSTER_NAME:$CI_BRANCH \
-                             -folds 5 \
-                             -cross_validation full
+                             -run_name $CI_BRANCH
 
 #-reuse LogisticRegressionTextVsClassifier#s3n://inreach-ml-models-official/TextVsClassifier_LogisticRegression/050717-173406.716/,NaiveBayesTextVsClassifier#s3n://inreach-ml-models-official/TextVsClassifier_NaiveBayes/050717-182958.035/,RandomForestNumericVsClassifier#s3n://inreach-ml-models-official/NumericVsClassifier_RandomForestClassifier/050717-200049.185/
