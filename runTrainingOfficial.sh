@@ -6,7 +6,6 @@
                              /jar/inreach-ml-training.jar \
                              -data_path s3n://inreach-prod-dynamo-data/dynamoDbData_20170904/ \
                              -aws $AWS \
-                             -classifier $CLASSIFIER \
                              -tag $CLUSTER_NAME:$CI_BRANCH \
                              -run_name official_v_add_highlights_no_snapshot_with_li_split_subclassifiers.4
 
