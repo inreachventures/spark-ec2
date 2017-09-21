@@ -840,7 +840,7 @@ def launch_cluster(conn, opts, cluster_name):
     time.sleep(15)
 
     # Give the instances descriptive names and set additional tags
-    additional_tags = {"Cluster": cluster_name}
+    additional_tags = {"Cluster": cluster_name, "Type": cluster_name.split("_")[0]}
     if opts.additional_tags.strip():
         additional_tags = dict(
             map(str.strip, tag.split(':', 1)) for tag in opts.additional_tags.split(',')
@@ -1222,8 +1222,6 @@ def deploy_files(conn, root_dir, opts, master_nodes, slave_nodes, modules, clust
         "job_type": "",
         "region": opts.region,
         "spark_executor_instances": spark_executor_instances_str,
-        "classifier": "RandomForestComposingVsClassifier",
-        "from_timestamp": "",
         "ci_branch": ci_branch,
         "ci_url": ci_url,
         "cluster_name": cluster_name
@@ -1254,21 +1252,16 @@ def deploy_files(conn, root_dir, opts, master_nodes, slave_nodes, modules, clust
     if opts.testing_official:
         template_vars["job_type"] = "TestingOfficial"
 
-    classifier = os.getenv('CI_BRANCH')
-    if opts.training or opts.training_official:
-        if not(classifier is None):
-            classifier = classifier.split("#")
-            if len(classifier) > 1:
-                template_vars["classifier"] = classifier[1]
-
-    if opts.testing or opts.testing_official:
-        if not(classifier is None):
-            classifier = classifier.split("#")
-            if len(classifier) > 1:
-                template_vars["from_timestamp"] = classifier[1]
-        if template_vars["from_timestamp"] is "":
-            print("ERROR: Must define timestamp for testing")
-            sys.exit(1)
+    #Default value is fast training
+    template_vars["aws"] = "fast"
+    template_vars["run_name"] = "NoNameSpecified"
+    branch_name = os.getenv('CI_BRANCH')
+    if not(branch_name is None):
+        branch_name_split_aws = branch_name.split("#")
+        if len(branch_name_split_aws) > 1:
+            template_vars["aws"] = branch_name_split_aws[1]
+        branch_name_split_run_name = branch_name.split(".")
+        template_vars["run_name"] = branch_name_split_run_name[0]
 
     # Create a temp directory in which we will place all the files to be
     # deployed after we substitue template parameters in them
