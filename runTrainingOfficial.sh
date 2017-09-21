@@ -8,6 +8,6 @@
                              -aws $AWS \
                              -classifier $CLASSIFIER \
                              -tag $CLUSTER_NAME:$CI_BRANCH \
-                             -run_name $CI_BRANCH
+                             -run_name official_v_add_highlights_no_snapshot_with_li_split_subclassifiers.4
 
 #-reuse LogisticRegressionTextVsClassifier#s3n://inreach-ml-models-official/TextVsClassifier_LogisticRegression/050717-173406.716/,NaiveBayesTextVsClassifier#s3n://inreach-ml-models-official/TextVsClassifier_NaiveBayes/050717-182958.035/,RandomForestNumericVsClassifier#s3n://inreach-ml-models-official/NumericVsClassifier_RandomForestClassifier/050717-200049.185/
