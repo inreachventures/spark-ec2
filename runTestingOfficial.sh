@@ -5,8 +5,8 @@
                              --driver-memory 54g \
                              --driver-cores 14 \
                              /jar/inreach-ml-scoring.jar \
-                             -model_path s3n://inreach-ml-models-official/ \
-                             -from_timestamp $FROM_TIMESTAMP \
-                             -aws remote \
+                             -data_path s3n://inreach-prod-dynamo-data/dynamoDbData_20170904/ \
+                             -aws $AWS \
                              -scoring_model VsScoringModel \
-                             -tag $CI_BRANCH
+                             -tag $CLUSTER_NAME:$CI_BRANCH \
+                             -run_name $RUN_NAME
