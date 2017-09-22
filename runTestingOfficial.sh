@@ -9,4 +9,4 @@
                              -aws $AWS \
                              -scoring_model VsScoringModel \
                              -tag $CLUSTER_NAME:$CI_BRANCH \
-                             -run_name $RUN_NAME
+                             -run_name official_v_post_July
