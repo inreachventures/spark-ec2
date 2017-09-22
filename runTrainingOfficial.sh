@@ -1,11 +1,11 @@
 #/bin/sh
 /root/spark/bin/spark-submit --class vc.inreach.ml.training.classifiers.ClassifierTrainingTask \
                              --deploy-mode client \
-                             --driver-memory 54g \
-                             --driver-cores 14 \
+                             --driver-memory 40g \
+                             --driver-cores 12 \
                              /jar/inreach-ml-training.jar \
                              -data_path s3n://inreach-prod-dynamo-data/dynamoDbData_20170904/ \
-                             -aws official \
+                             -aws $AWS \
                              -tag $CLUSTER_NAME:$CI_BRANCH \
                              -run_name official_v_add_highlights_no_snapshot_with_li_split_subclassifiers.4
 
