@@ -5,7 +5,7 @@
                              --driver-memory 54g \
                              --driver-cores 14 \
                              /jar/inreach-ml-scoring.jar \
-                             -model_path s3n://inreach-ml-models-official/ \
-                             -aws remote \
+                             -aws $AWS \
                              -scoring_model VsScoringModel \
-                             -tag $CI_BRANCH
+                             -run_name $RUN_NAME \
+                             -tag $RUN_NAME

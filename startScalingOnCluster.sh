@@ -11,5 +11,5 @@
             --copy-aws-credentials \
             --ebs-vol-num 1 \
             --ebs-vol-size 12 \
-            --deploy-root-dir $JAR_DIR $1 \
+            --deploy-root-dir $JAR_DIR \
             launch sparkScaling_$RANDOM

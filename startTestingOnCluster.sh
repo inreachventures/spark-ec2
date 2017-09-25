@@ -5,5 +5,5 @@
             --slaves 0 \
             --region eu-west-1 \
             --copy-aws-credentials \
-            --deploy-root-dir $JAR_DIR $1 \
+            --deploy-root-dir $JAR_DIR \
             launch sparkTesting_$RANDOM

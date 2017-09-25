@@ -8,5 +8,4 @@
             --region eu-west-1 \
             --copy-aws-credentials \
             --deploy-root-dir $JAR_DIR \
-            --scoring \
             launch sparkScoring_$RANDOM

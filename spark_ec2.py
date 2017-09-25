@@ -19,6 +19,12 @@
 # limitations under the License.
 #
 
+# Valid release names below - the ".[version]" bit is optional, and ignored in parsing
+# "train#fast#[some description].[version]"
+# "test#official#[some description].[version]"
+# "score#official#[some description].[version]"
+# "scale#official"
+
 from __future__ import division, print_function, with_statement
 
 import codecs
@@ -345,30 +351,6 @@ def parse_args():
     parser.add_option(
         "--instance-profile-name", default=None,
         help="IAM profile name to launch instances under")
-    parser.add_option(
-        "--scoring", action="store_true", default=False,
-        help="Execute runScoring.sh on cluster"
-    )
-    parser.add_option(
-        "--training", action="store_true", default=False,
-        help="Execute runTraining.sh on cluster"
-    )
-    parser.add_option(
-        "--training_official", action="store_true", default=False,
-        help="Execute runTrainingOfficial.sh on cluster"
-    )
-    parser.add_option(
-        "--scaling_official", action="store_true", default=False,
-        help="Execute runScalingOfficial.sh on cluster"
-    )
-    parser.add_option(
-        "--testing", action="store_true", default=False,
-        help="Execute runTesting.sh on cluster"
-    )
-    parser.add_option(
-        "--testing_official", action="store_true", default=False,
-        help="Execute runTestingOfficial.sh on cluster"
-    )
 
     (opts, args) = parser.parse_args()
     if len(args) != 2:
@@ -1235,34 +1217,23 @@ def deploy_files(conn, root_dir, opts, master_nodes, slave_nodes, modules, clust
         template_vars["aws_access_key_id"] = ""
         template_vars["aws_secret_access_key"] = ""
 
-    if opts.scoring:
-        template_vars["job_type"] = "Scoring"
-
-    if opts.training:
-        template_vars["job_type"] = "Training"
-
-    if opts.training_official:
-        template_vars["job_type"] = "TrainingOfficial"
-
-    if opts.scaling_official:
-        template_vars["job_type"] = "ScalingOfficial"
-
-    if opts.testing:
-        template_vars["job_type"] = "Testing"
-
-    if opts.testing_official:
-        template_vars["job_type"] = "TestingOfficial"
-
-    #Default value is fast training
-    template_vars["aws"] = "fast"
-    template_vars["run_name"] = "NoNameSpecified"
+    #Some blank defaults
+    template_vars["aws"] = ""
+    template_vars["job_type"] = ""
+    template_vars["run_name"] = ""
     branch_name = os.getenv('CI_BRANCH')
     if not(branch_name is None):
-        branch_name_split_aws = branch_name.split("#")
-        if len(branch_name_split_aws) > 1:
-            template_vars["aws"] = branch_name_split_aws[1]
-        branch_name_split_run_name = branch_name.split(".")
-        template_vars["run_name"] = branch_name_split_run_name[0]
+        branch_name_split = branch_name.split("#")
+        if len(branch_name_split > 1):
+            template_vars["job_type"] = branch_name_split[0].lower()
+            template_vars["aws"] = branch_name_split[1].lower()
+        if len(branch_name_split) > 2:
+            template_vars["job_type"] = branch_name_split[0].lower()
+            template_vars["aws"] = branch_name_split[1].lower()
+            branch_name_split_run_name = branch_name_split[2].split(".")
+            template_vars["run_name"] = branch_name_split_run_name[0].lower()
+    if (template_vars["job_type"] == "scale"):
+        template_vars["run_name"] = "ScalingModel"
 
     # Create a temp directory in which we will place all the files to be
     # deployed after we substitue template parameters in them
