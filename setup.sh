@@ -122,13 +122,13 @@ done
 if [ "$JOB_TYPE" != "" ]; then
 
   # Start job
+  # yes | /root/spark-ec2/spark-ec2 --region $REGION destroy $CLUSTER_NAME
   echo "Kicking off spark job"
 
   nohup sh -c '
   /root/spark-ec2/run_$JOB_TYPE.sh
   if [ $? != 0 ]; then
     yes | aws s3 cp ./nohup.out s3://inreach-ml-errors/$CLUSTER_NAME/
-    yes | /root/spark-ec2/spark-ec2 --region $REGION destroy $CLUSTER_NAME
   else
     yes | /root/spark-ec2/spark-ec2 --region $REGION destroy $CLUSTER_NAME
   fi
