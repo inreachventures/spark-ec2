@@ -970,9 +970,8 @@ def setup_spark_cluster(master, opts, cluster_name):
     if opts.ganglia:
         print("Ganglia started at http://%s:5080/ganglia" % master)
 
-    if opts.scoring or opts.training or opts.training_official or opts.scaling_official or opts.testing or opts.testing_official:
-        slack = Slacker(os.getenv('SLACK_API_KEY'))
-        slack.chat.post_message('#ml-deploys', "Spark cluster started at http://%s:8080\nSpark UI started at http://%s:4040\nGanglia started at http://%s:5080/ganglia\nPapertrail logging at http://papertrailapp.com/systems/%s/events" % (master, master, master, cluster_name))
+    slack = Slacker(os.getenv('SLACK_API_KEY'))
+    slack.chat.post_message('#ml-deploys', "Spark cluster started at http://%s:8080\nSpark UI started at http://%s:4040\nGanglia started at http://%s:5080/ganglia\nPapertrail logging at http://papertrailapp.com/systems/%s/events" % (master, master, master, cluster_name))
 
 def is_ssh_available(host, opts, print_ssh_output=True):
     """
@@ -1405,10 +1404,6 @@ def get_dns_name(instance, private_ips=False):
 
 def real_main():
     (opts, action, cluster_name) = parse_args()
-
-    if opts.scoring and (opts.training or opts.training_official):
-        print("ERROR: Can't do scoring and training at the same time")
-        sys.exit(1)
 
     # Input parameter validation
     spark_v = get_validate_spark_version(opts.spark_version, opts.spark_git_repo)
