@@ -1226,13 +1226,16 @@ def deploy_files(conn, root_dir, opts, master_nodes, slave_nodes, modules, clust
         if len(branch_name_split) > 1:
             template_vars["job_type"] = branch_name_split[0].lower()
             template_vars["aws"] = branch_name_split[1].lower()
-        if len(branch_name_split) > 2:
-            template_vars["job_type"] = branch_name_split[0].lower()
-            template_vars["aws"] = branch_name_split[1].lower()
-            branch_name_split_run_name = branch_name_split[2].split(".")
-            template_vars["run_name"] = branch_name_split_run_name[0].lower()
-    if (template_vars["job_type"] == "scale"):
-        template_vars["run_name"] = "ScalingModel"
+            #If the job_type is scale, then no run_name is given (fixed to ScalingModel)
+            if (template_vars["job_type"] == "scale"):
+                template_vars["run_name"] = "ScalingModel"
+            else:
+                if len(branch_name_split) > 2:
+                    branch_name_split_run_name = branch_name_split[2].split(".")
+                    template_vars["run_name"] = branch_name_split_run_name[0].lower()
+                else:
+                    print("ERROR: branch name incorrectly specified")
+                    sys.exit(1)
 
     # Create a temp directory in which we will place all the files to be
     # deployed after we substitue template parameters in them
