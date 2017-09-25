@@ -1223,7 +1223,7 @@ def deploy_files(conn, root_dir, opts, master_nodes, slave_nodes, modules, clust
     branch_name = os.getenv('CI_BRANCH')
     if not(branch_name is None):
         branch_name_split = branch_name.split("#")
-        if len(branch_name_split > 1):
+        if len(branch_name_split) > 1:
             template_vars["job_type"] = branch_name_split[0].lower()
             template_vars["aws"] = branch_name_split[1].lower()
         if len(branch_name_split) > 2:
