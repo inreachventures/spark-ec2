@@ -9,4 +9,4 @@
                              -aws $AWS \
                              -scoring_model VsScoringModel \
                              -tag $CLUSTER_NAME:$CI_BRANCH \
-                             -run_name official_v_add_highlights_no_snapshot_with_li_split_subclassifiers.4
+                             -run_name $RUN_NAME
