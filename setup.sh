@@ -132,8 +132,9 @@ if [ "$JOB_TYPE" != "" ]; then
   /root/spark-ec2/run_$JOB_TYPE.sh
   if [ $? != 0 ]; then
     yes | aws s3 cp /root/spark-ec2/nohup.out s3://inreach-ml-errors/$CLUSTER_NAME/
+    yes | /root/spark-ec2/spark-ec2 --region $REGION destroy $CLUSTER_NAME
   else
-    echo "Done For Now"
+    yes | /root/spark-ec2/spark-ec2 --region $REGION destroy $CLUSTER_NAME
   fi
   ' &
   sleep 20
