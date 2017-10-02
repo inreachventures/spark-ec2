@@ -1,15 +1,7 @@
-#!/bin/bash
-./spark-ec2 --master-instance-type m4.4xlarge \
-            --instance-type m4.4xlarge \
-            --zone eu-west-1b \
-            --spot-price 0.25 \
-            --master-spot-price 0.25 \
-            --identity-file ../clone/inreach-ml-core/src/main/resources/spark-cluster.pem \
-            --key-pair spark-cluster \
-            --slaves 4 \
-            --region eu-west-1 \
-            --copy-aws-credentials \
-            --ebs-vol-num 1 \
-            --ebs-vol-size 75 \
-            --deploy-root-dir $JAR_DIR \
-            launch sparkTraining_$RANDOM
+./startTrainingOnCluster.sh "--classifier-name NumericVsClassifier_RandomForestClassifier --classifier-wait false"; (if [ $? != 0 ]; then yes | ./spark-ec2 destroy sparkTraining; fi)
+./startTrainingOnCluster.sh "--classifier-name NumericVsClassifier_ProbabilisticMultilayerPerceptronClassifier --classifier-wait false"; (if [ $? != 0 ]; then yes | ./spark-ec2 destroy sparkTraining; fi)
+./startTrainingOnCluster.sh "--classifier-name NumericVsClassifier_ProbabilisticLSHClassifier --classifier-wait false"; (if [ $? != 0 ]; then yes | ./spark-ec2 destroy sparkTraining; fi)
+./startTrainingOnCluster.sh "--classifier-name Word2VecVsClassifier_LogisticRegression --classifier-wait false"; (if [ $? != 0 ]; then yes | ./spark-ec2 destroy sparkTraining; fi)
+./startTrainingOnCluster.sh "--classifier-name TextVsClassifier_LogisticRegression --classifier-wait false"; (if [ $? != 0 ]; then yes | ./spark-ec2 destroy sparkTraining; fi)
+./startTrainingOnCluster.sh "--classifier-name TextVsClassifier_NaiveBayes --classifier-wait false"; (if [ $? != 0 ]; then yes | ./spark-ec2 destroy sparkTraining; fi)
+./startTrainingOnCluster.sh "--classifier-name ComposingVsClassifier_RandomForestClassifier --classifier-wait true"; (if [ $? != 0 ]; then yes | ./spark-ec2 destroy sparkTraining; fi)
