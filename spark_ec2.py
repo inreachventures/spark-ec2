@@ -1246,7 +1246,7 @@ def deploy_files(conn, root_dir, opts, master_nodes, slave_nodes, modules, clust
                     sys.exit(1)
     if not(opts.classifier_name is None):
         template_vars["classifier_name"] = opts.classifier_name
-    if not(opts.wait is None):
+    if not(opts.classifier_wait is None):
         template_vars["classifier_wait"] = opts.classifier_wait
 
     # Create a temp directory in which we will place all the files to be
