@@ -1240,8 +1240,8 @@ def deploy_files(conn, root_dir, opts, master_nodes, slave_nodes, modules, clust
                 else:
                     print("ERROR: branch name incorrectly specified")
                     sys.exit(1)
-    if not(classifier_name is None):
-        template_vars["classifier"] = classifier_name
+    if not(opts.classifier_name is None):
+        template_vars["classifier"] = opts.classifier_name
 
     # Create a temp directory in which we will place all the files to be
     # deployed after we substitue template parameters in them

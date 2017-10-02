@@ -12,5 +12,4 @@
             --ebs-vol-num 1 \
             --ebs-vol-size 75 \
             --deploy-root-dir $JAR_DIR \
-            $1 \
             launch sparkTraining_$RANDOM
