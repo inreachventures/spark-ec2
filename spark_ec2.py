@@ -351,6 +351,9 @@ def parse_args():
     parser.add_option(
         "--instance-profile-name", default=None,
         help="IAM profile name to launch instances under")
+    parser.add_option(
+        "--classifier-name", default=None,
+        help="Specify explicit classifier")
 
     (opts, args) = parser.parse_args()
     if len(args) != 2:
@@ -1220,6 +1223,7 @@ def deploy_files(conn, root_dir, opts, master_nodes, slave_nodes, modules, clust
     template_vars["aws"] = ""
     template_vars["job_type"] = ""
     template_vars["run_name"] = ""
+    template_vars["classifier"] = "ComposingVsClassifier_RandomForestClassifier"
     branch_name = os.getenv('CI_BRANCH')
     if not(branch_name is None):
         branch_name_split = branch_name.split("#")
@@ -1236,6 +1240,8 @@ def deploy_files(conn, root_dir, opts, master_nodes, slave_nodes, modules, clust
                 else:
                     print("ERROR: branch name incorrectly specified")
                     sys.exit(1)
+    if not(classifier_name is None):
+        template_vars["classifier"] = classifier_name
 
     # Create a temp directory in which we will place all the files to be
     # deployed after we substitue template parameters in them
