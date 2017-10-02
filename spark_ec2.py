@@ -355,7 +355,7 @@ def parse_args():
         "--classifier-name", default=None,
         help="Specify explicit classifier")
     parser.add_option(
-        "--classifier-wait", default=False,
+        "--classifier-wait", default=None,
         help="Should we wait for classifier to be created rather than creating it ourselves")
 
     (opts, args) = parser.parse_args()
@@ -1227,7 +1227,7 @@ def deploy_files(conn, root_dir, opts, master_nodes, slave_nodes, modules, clust
     template_vars["job_type"] = ""
     template_vars["run_name"] = ""
     template_vars["classifier_name"] = "ComposingVsClassifier_RandomForestClassifier"
-    template_vars["classifier_wait"] = False
+    template_vars["classifier_wait"] = "false"
     branch_name = os.getenv('CI_BRANCH')
     if not(branch_name is None):
         branch_name_split = branch_name.split("#")
