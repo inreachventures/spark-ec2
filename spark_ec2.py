@@ -354,6 +354,9 @@ def parse_args():
     parser.add_option(
         "--classifier-name", default=None,
         help="Specify explicit classifier")
+    parser.add_option(
+        "--classifier-wait", default=False,
+        help="Should we wait for classifier to be created rather than creating it ourselves")
 
     (opts, args) = parser.parse_args()
     if len(args) != 2:
@@ -1223,7 +1226,8 @@ def deploy_files(conn, root_dir, opts, master_nodes, slave_nodes, modules, clust
     template_vars["aws"] = ""
     template_vars["job_type"] = ""
     template_vars["run_name"] = ""
-    template_vars["classifier"] = "ComposingVsClassifier_RandomForestClassifier"
+    template_vars["classifier_name"] = "ComposingVsClassifier_RandomForestClassifier"
+    template_vars["classifier_wait"] = False
     branch_name = os.getenv('CI_BRANCH')
     if not(branch_name is None):
         branch_name_split = branch_name.split("#")
@@ -1241,7 +1245,9 @@ def deploy_files(conn, root_dir, opts, master_nodes, slave_nodes, modules, clust
                     print("ERROR: branch name incorrectly specified")
                     sys.exit(1)
     if not(opts.classifier_name is None):
-        template_vars["classifier"] = opts.classifier_name
+        template_vars["classifier_name"] = opts.classifier_name
+    if not(opts.wait is None):
+        template_vars["classifier_wait"] = opts.classifier_wait
 
     # Create a temp directory in which we will place all the files to be
     # deployed after we substitue template parameters in them

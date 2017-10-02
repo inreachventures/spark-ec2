@@ -9,5 +9,5 @@
                              -aws $AWS \
                              -tag $CLUSTER_NAME:$CI_BRANCH \
                              -run_name $RUN_NAME \
-                             -classifier $CLASSIFIER
-                             -wait true
+                             -classifier $CLASSIFIER_NAME \
+                             -wait $CLASSIFIER_WAIT
