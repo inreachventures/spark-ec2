@@ -5,7 +5,7 @@
                              --driver-memory 40g \
                              --driver-cores 12 \
                              /jar/inreach-ml-scoring.jar \
-                             -data_path s3n://inreach-prod-dynamo-data/dynamoDbData_20170904/ \
+                             -data_path s3n://inreach-prod-dynamo-data/dynamoDbData_20170922/ \
                              -aws $AWS \
                              -scoring_model VsScoringModel \
                              -tag $CLUSTER_NAME:$CI_BRANCH \
