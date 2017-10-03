@@ -1,27 +1,51 @@
 # InReach Ventures
 
-There are 4 scripts to launch clusters of Spark machines.  
+This project holds scripts that do the following:  
+  - launch a cluster of EC2 machines
+  - install spark / scala / other dependencies on these boxes
+  - launch inreach-ml tasks on these clusters (training, scaling, testing & scoring)
+ 
+It is a fork of a public repo, but has now deviated materially from the parent repo.
 
-- Training: to run a training job with limited cross-validation
-- Training Official: to run an official training job with full cross-validation. The resulting models are used in production by the scorer
-- Scaling: to compute the trends across all organizations
-- Scoring: starts a scorer. The official model to use is saved in the inreach-ml codebase (inreach-ml-core/main/ressources/application_remote.conf)
-- Testing: to test trained models from S3::/inreach-models against recent data and generates a confusion matrix (testing_v_X#timestamp_from_time_to_test, make sure to use a timestamp that does not include companies that were used in the training data)
-- Testing Official: same as above but from models in S3://inreach-models-official
+## Relevant Files
 
-Spark Settings  
-A glossary: https://spark.apache.org/docs/latest/cluster-overview.html
-See templates/root/spark/conf/spark-env.ssh
+### Creating Clusters
 
-CodeShip VM spins up the cluster and runs the script.  
-See CodeShip deployment options: https://app.codeship.com/projects/198189/deployment_branches/161300
+These files are:  
+  - `startScalingOnCluster.sh`
+  - `startScoringOnCluster.sh`
+  - `startTestingOnCluster.sh`
+  - `startTrainingOnCluster.sh`
+  - `startingTrainingParallelOnCluster.sh`
+  
+They are all very similiar, except they specify different cluster parameters (machine types / amounts / prices / volumes).
 
-To make a new deployment, you need to make a release on GitHub following the name conventions:  
-training_v_N, scaling_v_N, training_official_v__N, testing_v_X#timestamp
+`startingTrainingParallelOnCluster.sh` is different as it calls `startTrainingOnCluster.sh` multiple times to setup a new cluster for each sub-classifier, and a cluster for the composing classifier.
 
-The 'spark-ec2.py' script is the main launch script. It ssh into the machines and starts everything.
+### Starting inreach-ml Tasks
 
-# EC2 Cluster Setup for Apache Spark
+These files are:
+  - `run_scale.sh`
+  - `run_score.sh`
+  - `run_test.sh`
+  - `run_train.sh`
+  - `run_trainp.sh`
+
+These are all very similiar, and are responsible for triggering the related spark jobs. These are the files that must be modified if you want to change the training data source.
+
+### EC2 Setup
+
+The main script that runs to create a cluster is `spark-ec2.py`. This script creates the cluster, and then ssh's onto each box on the cluster and executes either `setup.sh` for the master, or `setup-slave.sh` for the slaves.
+
+If you want to pass an additional environment variable through from codeship to the spark jobs, the `spark-ec2.py` script will need to be modified to add this to `template_vars`. You will also need to modify the `deploy.generic/root/spark-ec2/ec2-variables.sh` script to reference the new `template_vars` key. spark-ec2 will populate the `ec2-variables.sh` file with concrete versions of variables, and then execute it on the cluster EC2 machines to initialise environment variables.
+
+If you want to modify one of the spark environment variables, this can be done in a similar way, but instead by editing the files under `templates/root/spark/conf/` directory rather than `ec2-variables.sh`.
+
+If you want to upgrade the version of spark being used (currently at 2.2.0) this can be done in `spark-ec2.py` around line 61 (by setting the `SPARK_EC2_VERSION` variable).
+
+# Original Spark-EC2 README.md from parent project
+
+## EC2 Cluster Setup for Apache Spark
 
 `spark-ec2` allows you
 to launch, manage and shut down
