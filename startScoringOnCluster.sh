@@ -7,5 +7,7 @@
             --slaves 0 \
             --region eu-west-1 \
             --copy-aws-credentials \
+            --ebs-vol-num 1 \
+            --ebs-vol-size 20 \
             --deploy-root-dir $JAR_DIR \
             launch sparkScoring_$RANDOM
