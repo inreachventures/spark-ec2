@@ -829,7 +829,11 @@ def launch_cluster(conn, opts, cluster_name):
     time.sleep(15)
 
     # Give the instances descriptive names and set additional tags
-    additional_tags = {"Cluster": cluster_name, "Type": cluster_name.split("_")[0]}
+    ci_url = os.getenv('CI_BUILD_URL')
+    if ci_url is None:
+        ci_url = ""
+
+    additional_tags = {"Cluster": cluster_name, "Type": cluster_name.split("_")[0], "CodeShip": ci_url}
     if opts.additional_tags.strip():
         additional_tags = dict(
             map(str.strip, tag.split(':', 1)) for tag in opts.additional_tags.split(',')
