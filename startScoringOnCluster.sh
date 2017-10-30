@@ -1,6 +1,6 @@
 #!/bin/bash
-./spark-ec2 --instance-type m4.4xlarge \
-            --zone eu-west-1a \
+./spark-ec2 --instance-type r3.4xlarge \
+            --zone eu-west-1c \
             --master-spot-price 0.3 \
             --identity-file ../clone/inreach-ml-core/src/main/resources/spark-cluster.pem \
             --key-pair spark-cluster \
