@@ -1,7 +1,7 @@
 #!/bin/bash
 ./spark-ec2 --master-instance-type m4.4xlarge \
             --instance-type m4.4xlarge \
-            --zone eu-west-1c \
+            --zone eu-west-1a \
             --spot-price 0.3 \
             --master-spot-price 0.3 \
             --identity-file ../clone/inreach-ml-core/src/main/resources/spark-cluster.pem \
