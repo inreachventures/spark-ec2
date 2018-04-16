@@ -291,6 +291,7 @@ get a list of slave hostnames and `/root/spark-ec2/copy-dir` to sync a directory
 
 score_#
 
+```
 mvn package
 pip install awscli
 pip install slacker
@@ -302,3 +303,4 @@ git clone https://github.com/inreachventures/spark-ec2 -b branch-2.0 spark-ec2
 cd spark-ec2
 chmod 400 ../clone/inreach-ml-core/src/main/resources/spark-cluster.pem
 ./startScoringOnCluster.sh; (if [ $? != 0 ]; then yes | ./spark-ec2 destroy sparkScoring; fi)
+```
