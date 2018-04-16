@@ -284,3 +284,21 @@ after the templates have been configured. You can use the environment variables 
 get a list of slave hostnames and `/root/spark-ec2/copy-dir` to sync a directory across machines.
 
 5. Modify `spark_ec2.py` to add your module to the list of enabled modules.
+
+
+
+#CODESHIP
+
+score_#
+
+mvn package
+pip install awscli
+pip install slacker
+mkdir ./jar
+cp inreach-ml-scoring/target/inreach-ml-scoring-0.0.1-SNAPSHOT-jar-with-dependencies.jar ./jar/inreach-ml-scoring.jar
+export JAR_DIR=`pwd`/jar
+cd ..
+git clone https://github.com/inreachventures/spark-ec2 -b branch-2.0 spark-ec2
+cd spark-ec2
+chmod 400 ../clone/inreach-ml-core/src/main/resources/spark-cluster.pem
+./startScoringOnCluster.sh; (if [ $? != 0 ]; then yes | ./spark-ec2 destroy sparkScoring; fi)
